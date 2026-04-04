@@ -10,11 +10,11 @@ pipeline {
             }
         }
 
-        stage('install') {
+        stage('Install Dependencies') {
             steps {
                 sh '''
                     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-                    python3 get-pip.py
+                    python3 get-pip.py --break-system-packages
                     pip3 install opencv-python-headless numpy --break-system-packages
                 '''
             }
