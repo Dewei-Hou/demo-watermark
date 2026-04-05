@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watermark-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watermark
+  template:
+    metadata:
+      labels:
+        app: watermark
+    spec:
+      containers:
+      - name: watermark
+        image: deweihou/watermark-app:latest
