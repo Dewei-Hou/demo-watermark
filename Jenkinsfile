@@ -78,10 +78,9 @@ pipeline {
         stage('Deploy to K8s') {
             steps {
                 sh '''
+                    kubectl delete job watermark-job --ignore-not-found
                     kubectl apply -f deployment.yaml
-                    kubectl set image deployment/watermark-app \
-                        watermark=deweihou/${IMAGE_NAME}:${IMAGE_TAG}
-                    kubectl rollout status deployment/watermark-app
+                    kubectl wait --for=condition=complete job/watermark-job --timeout=60s
                 '''
             }
         }

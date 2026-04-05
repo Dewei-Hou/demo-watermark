@@ -1,17 +1,12 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: watermark-app
+  name: watermark-job
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: watermark
   template:
-    metadata:
-      labels:
-        app: watermark
     spec:
       containers:
       - name: watermark
         image: deweihou/watermark-app:latest
+      restartPolicy: Never
+  backoffLimit: 3
