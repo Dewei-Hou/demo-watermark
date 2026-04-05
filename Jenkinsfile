@@ -1,11 +1,18 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = 'watermark-app'
+        IMAGE_TAG  = "${BUILD_NUMBER}"
+    }
+
     stages {
         stage('Check env') {
             steps {
                 sh '''
                     python3 --version
+                    docker --version
+                    kubectl version --client
                 '''
             }
         }
@@ -39,6 +46,43 @@ pipeline {
         stage('Run Watermark') {
             steps {
                 sh 'python3 main.py'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    docker build -t deweihou/${IMAGE_NAME}:${IMAGE_TAG} .
+                    docker tag deweihou/${IMAGE_NAME}:${IMAGE_TAG} \
+                               deweihou/${IMAGE_NAME}:latest
+                '''
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-token',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
+                        docker push deweihou/${IMAGE_NAME}:${IMAGE_TAG}
+                        docker push deweihou/${IMAGE_NAME}:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to K8s') {
+            steps {
+                sh '''
+                    kubectl apply -f deployment.yaml
+                    kubectl set image deployment/watermark-app \
+                        watermark=deweihou/${IMAGE_NAME}:${IMAGE_TAG}
+                    kubectl rollout status deployment/watermark-app
+                '''
             }
         }
     }
