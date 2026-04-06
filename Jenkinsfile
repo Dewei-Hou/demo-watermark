@@ -17,7 +17,7 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('install') {
             steps {
                 sh '''
                     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
@@ -43,9 +43,9 @@ pipeline {
             }
         }
 
-        stage('Run Watermark') {
+        stage('Test') {
             steps {
-                sh 'python3 main.py'
+                sh 'python3 test_main.py'
             }
         }
 
