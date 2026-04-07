@@ -19,16 +19,29 @@ def watermark(gray_main_img, gray_hidden_img):
 
 # func 2 remove background
 def removeBackground(img):
+    mask = np.zeros(img.shape[:2], np.uint8)
 
-    pass
+    bgd_model = np.zeros((1, 65), np.float64)
+    fgd_model = np.zeros((1, 65), np.float64)
 
+    rect = (10, 10, img_row - 10, img_col - 10)
+
+    cv2.grabCut(img, mask, rect, bgd_model, fgd_model, 5, cv2.GC_INIT_WITH_RECT)
+    mask2 = np.where((mask == 2) | (mask == 0), 0, 1).astype('uint8')
+
+    result = img * mask2[:, :, np.newaxis]
+    
+    return result
+
+
+# func 3 edge detection
 def edgeDetection(img):
 
     pass
 
 
 def run_watermark():
-    main_img = cv2.imread("image/main_img.jpg")
+    main_img = cv2.imread("image/main_img.jpg").copy()
     hidden_img = cv2.imread("image/hidden_img.jpg")
 
     main_img = cv2.resize(main_img, (img_row, img_col))
@@ -47,13 +60,13 @@ def run_watermark():
 
 
 def run_removeBackground():
-    main_img = cv2.imread("image/main_img.jpg")
+    main_img = cv2.imread("image/main_img.jpg").copy()
     main_img = cv2.resize(main_img, (img_row, img_col))
     result = removeBackground(main_img)
     return result
 
 def run_edgeDetection():
-    main_img = cv2.imread("image/main_img.jpg")
+    main_img = cv2.imread("image/main_img.jpg").copy()
     main_img = cv2.resize(main_img, (img_row, img_col))
     result = edgeDetection(main_img)
     return result
@@ -61,14 +74,17 @@ def run_edgeDetection():
 def main(mode):
     if mode == 1:
         print("===func 1 watermark===")
-        run_watermark()
+        result = run_watermark()
     elif mode == 2:
         print("===func 2 remove background===")
-        run_removeBackground()
+        result = run_removeBackground()
     elif mode == 3:
         print("===func 3 edge detection===")
-        run_edgeDetection()
+        result = run_edgeDetection()
+
+    cv2.imwrite("image/result.jpg", result)
+    
 
 
 if __name__ == "__main__":
-    main(mode=1)
+    main(mode=2)

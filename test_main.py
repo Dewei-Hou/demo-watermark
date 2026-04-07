@@ -19,8 +19,10 @@ def test_watermark():
 
 
 def test_removeBackground():
-    result = m.removeBackground(np.zeros((500, 700, 3), dtype=np.uint8))
-    assert result is None, "removeBackground failed"
+    test_img = np.ones((500, 700, 3), dtype=np.uint8) * 100
+    result = m.removeBackground(test_img.copy())
+
+    assert not np.array_equal(result, test_img), "removeBackground failed"
     print("removeBackground successed")
 
 
