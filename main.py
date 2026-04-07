@@ -36,8 +36,13 @@ def removeBackground(img):
 
 # func 3 edge detection
 def edgeDetection(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    pass
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    
+    result = cv2.Canny(blurred, 50, 150)
+    
+    return result
 
 
 def run_watermark():
@@ -87,4 +92,4 @@ def main(mode):
 
 
 if __name__ == "__main__":
-    main(mode=2)
+    main(mode=3)

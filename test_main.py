@@ -27,8 +27,10 @@ def test_removeBackground():
 
 
 def test_edgeDetection():
+    test_img = np.ones((500, 700, 3), dtype=np.uint8) * 100
     result = m.edgeDetection(np.zeros((500, 700, 3), dtype=np.uint8))
-    assert result is None, "edgeDetection failed"
+
+    assert not np.array_equal(result, test_img), "edgeDetection failed"
     print("test_edgeDetection successed")
 
 
